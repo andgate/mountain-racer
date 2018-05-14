@@ -9,8 +9,10 @@
 
 
 API::API()
-	: table()
-	, players()
+	: bunny (race)
+	, taz(race)
+	, tweety(race)
+	, marvin(race)
 {}
 
 API::~API() {}

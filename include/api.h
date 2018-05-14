@@ -12,6 +12,11 @@
 using namespace std;
 
 
+void race()
+{
+	return;
+}
+
 /**
  * @brief Racing Game API class.
  * 
@@ -38,6 +43,11 @@ public:
 	int run();
 
 private:
+	thread bunny  (race);
+	thread taz    (race);
+	thread tweety (race);
+	thread marvin (race);
+
 	static const int PLAYER_COUNT = 2;
 	static const int INITIAL_HAND_SIZE = 10;
 

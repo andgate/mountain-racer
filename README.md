@@ -1,4 +1,4 @@
-# Dominoes
+# Mountain Racing
 This is a racing game that is played by the computer.
 
 # Instructions.
