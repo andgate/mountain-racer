@@ -4,6 +4,7 @@
 #include <mutex>
 
 #include "api.h"
+#include "racer.h"
 
 API::API()
 	: isWon(false)
@@ -15,19 +16,27 @@ void API::run()
 {
 	create();
     
+    Racer* racerBunny  = new Racer("B");
+    Racer* racerTaz    = new Racer("D");
+    Racer* racerTweety = new Racer("T");
+    Racer* racerMarvin = new Racer("M");
+    
     while(!isWon) {
-      bunny = thread( [this] { this->race(); } );
-	  taz = thread( [this] { this->race(); } );
-	  tweety = thread( [this] { this->race(); } );
-      marvin = thread( [this] { this->race(); } );
+      bunny  = thread( [this, racerBunny ] { this->race(racerBunny ); } );
+	  taz    = thread( [this, racerTaz   ] { this->race(racerTaz   ); } );
+	  tweety = thread( [this, racerTweety] { this->race(racerTweety); } );
+      marvin = thread( [this, racerMarvin] { this->race(racerMarvin); } );
       
       bunny.join();
       taz.join();
       tweety.join();
       marvin.join();
-      
-      printMountain();
     }
+    
+    delete racerBunny;
+    delete racerTaz;
+    delete racerTweety;
+    delete racerMarvin;
 }
 
 void API::create()
@@ -36,11 +45,12 @@ void API::create()
 }
 
 
-void API::race()
+void API::race(Racer* racer)
 {
 	this->mountainMutex.lock();
     
-    // do stuff
+    // racer stuff
+    cout << racer->getId() << endl;
     
     this->mountainMutex.unlock();
 }

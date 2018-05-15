@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "random.h"
+#include "racer.h"
 
 using namespace std;
 
@@ -48,25 +49,23 @@ private:
 	bool isWon;
 
 	/**
-	 * @brief Creates the API for dominos.
+	 * @brief Creates the API for the racing game.
 	 *
-	 *  Creates random number generator, table, and players.
+	 *  For now, mostly just creates a random number generator.
 	 */
 	void create();
 	
 
-	/**
-	 * @brief A standard turn
-  
-	 * Takes a random domino from the player's hand and plays it
-	 * 
-	 * @return True when the current player has won.
+    
+    /**
+	 * @brief Race a player
+     * 
+     * Simply locks the mountain and unlocks it.
 	 */
-	void race();
+	void race(Racer* racer);
 
     /**
-	 * @brief Print ranking of players to the console.
-	 * 
+	 * @brief Print the mountain to the console.
 	 */
 	void printMountain();
 };
