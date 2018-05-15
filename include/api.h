@@ -1,21 +1,15 @@
 #ifndef API_H
 #define API_H
 
+#include <mutex>
 #include <thread>
 #include <vector>
 #include <sstream>
 
 #include "random.h"
-#include "player.h"
-#include "table.h"
 
 using namespace std;
 
-
-void race()
-{
-	return;
-}
 
 /**
  * @brief Racing Game API class.
@@ -40,23 +34,18 @@ public:
 	 * 
 	 * @return EXIT_SUCCESS when successful, otherwise EXIT_FAILURE.
 	 */
-	int run();
+	void run();
 
 private:
-	thread bunny  (race);
-	thread taz    (race);
-	thread tweety (race);
-	thread marvin (race);
+	thread bunny;
+	thread taz;
+	thread tweety;
+	thread marvin;
+    
+    mutex mountainMutex;
+    vector<vector<int>> mountain;
 
-	static const int PLAYER_COUNT = 2;
-	static const int INITIAL_HAND_SIZE = 10;
-
-	Table table;
-	
-	vector<Player> players;
-
-	int currPlayerIndex = 0;
-	int turnCount = 0;
+	bool isWon;
 
 	/**
 	 * @brief Creates the API for dominos.
@@ -65,76 +54,21 @@ private:
 	 */
 	void create();
 	
-	/**
-	 * @brief Creates some number of players.
-	 *
-	 *  Players willed be named "Player1", "Player2", etc.
-	 *
-	 * @param playerCount number of players to create.
-	 */
-	void createPlayers(int playerCount);
-
-	/**
-	 * @brief Create a single player.
-	 *
-	 * @param playerName Name to give player.
-	 */
-	void createPlayer(string playerName);
-    
-
-	/**
-	 * @brief Randomly decides which player goes first.
-	 */
-	void pickFirstTurn();
-
-	/**
-	 * @brief Gives each player an amount dominoes.
-	 *
-	 * @param amount Number of dominos each player may recieve.
-	 */
-	void deal(int amount);
 
 	/**
 	 * @brief A standard turn
-	 * 
+  
 	 * Takes a random domino from the player's hand and plays it
 	 * 
 	 * @return True when the current player has won.
 	 */
-	bool playTurn();
+	void race();
 
-	/**
-	 * @brief Changes whose turn it is
-	 * 
-	 * @return Player* 
-	 */
-	Player* nextPlayer();
-
-	/**
-	 * @brief Get the Current Player object
-	 * 
-	 * @return Player* 
-	 */
-	Player* getCurrentPlayer();
-
-	/**
-	 * @brief Checks if the players are blocked
-	 * 
-	 * @return True when blocked, false otherwise.
-	 */
-	bool isBlocked();
-
-	/**
-	 * @brief Prints all player's hands
-	 * 
-	 */
-	void printPlayersHands();
-
-	/**
+    /**
 	 * @brief Print ranking of players to the console.
 	 * 
 	 */
-	void printRanking();
+	void printMountain();
 };
 
 #endif /* API_H */
