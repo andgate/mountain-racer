@@ -6,12 +6,20 @@ class Position {
 private:
     int m_x;
     int m_y;
-  
     
 public:
+    Position()
+      : m_x(0), m_y(0)
+    {}
+    
+    Position(const Position& other)
+      : m_x(other.m_x), m_y(other.m_y)
+    {}
+  
     Position(int x, int y)
       : m_x(x), m_y(y)
-      {}
+    {}
+      
     ~Position() {}
   
     void move(int moveX, int moveY)

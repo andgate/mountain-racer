@@ -6,8 +6,9 @@
 #include <vector>
 #include <sstream>
 
-#include "random.h"
 #include "racer.h"
+#include "entity.h"
+#include "constants.h"
 
 using namespace std;
 
@@ -17,7 +18,7 @@ using namespace std;
  * 
  * Simply call run and this API will play our racing game.
  */
-class API : Random
+class API
 {
 public:
 	/**
@@ -38,12 +39,11 @@ public:
 	void run();
 
 private:
+    vector<Entity> entities; 
+  
+    Racer* racers[RACER_COUNT];
+	thread racerThreads[RACER_COUNT];
     
-    const int RACER_COUNT = 4;
-    Racer* racers[4];
-	thread racerThreads[4];
-    
-    const int PLANETX_SIZE = 10;
     mutex planetXMutex;
 
 	bool isWon;
@@ -56,10 +56,15 @@ private:
 	void create();
     
     
+    void randomizeEntities();
+    void randomizeEntity(Entity*);
+    Entity* getEntityAt(int, int);
+    void removeEntity(Entity*);
+    
     void randomizeRacers();
     void randomizeRacer(Racer*);
     void randomlyMoveRacer(Racer*);
-    Racer* getRacerAt(int atX, int atY);
+    Racer* getRacerAt(int, int);
     
     /**
 	 * @brief Race a player

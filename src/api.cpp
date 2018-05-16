@@ -12,110 +12,45 @@ using namespace std::chrono_literals; // ns, ms, s
 
 
 API::API()
-	: isWon(false)
+	: entities()
+	, isWon(false)
 {
 	racers[0] = new Racer("B");
 	racers[1] = new Racer("D");
 	racers[2] = new Racer("T");
 	racers[3] = new Racer("M");
+	
+	entities.reserve(3);
+	entities.push_back(Entity("C"));
+	entities.push_back(Entity("C"));
+	entities.push_back(Entity("F"));
 }
 
 API::~API()
 {
 	for(int i = 0; i < RACER_COUNT; ++i)
-		delete racers[i];
+		delete &racers[i];
 }
 
 void API::run()
 {
 	create();
 	
+	int roundCount = 1;
+	
     while(!isWon) {
-		for(int i = 0; i < RACER_COUNT; ++i)
-			racerThreads[i] = thread( [this, i] { this->race(this->racers[i] ); } );
+		cout << "-----------------------------------" << endl;
+		cout << "-- ROUND #" << roundCount++ << endl;
+		for(int i = 0; i < RACER_COUNT; ++i) {
+			Racer* racer = racers[i];
+			racerThreads[i] = thread( [this, racer] { this->race(racer); } );
+		}
 		
 		for(int i = 0; i < RACER_COUNT; ++i)
 			racerThreads[i].join();
     }
 }
 
-void API::create()
-{
-	Random::create();
-	randomizeRacers();
-}
-
-
-void API::randomizeRacers()
-{
-	for(int i = 0; i < RACER_COUNT; ++i)
-		racers[i]->getPos()->setPos(-1, -1);
-	
-	for(int i = 0; i < RACER_COUNT; ++i)
-		randomizeRacer(racers[i]);
-}
-
-void API::randomizeRacer(Racer* racer)
-{
-	int x;
-	int y;
-	Racer* other;
-
-	do {
-		x = randomInt(0, PLANETX_SIZE-1);
-		y = randomInt(0, PLANETX_SIZE-1);
-		other = getRacerAt(x, y);
-	} while (other != NULL);
-
-	racer->getPos()->setPos(x, y);
-}
-
-void API::randomlyMoveRacer(Racer* racer)
-{ 	
-	int racerX = racer->getPos()->getX();
-	int racerY = racer->getPos()->getY();
-	
-	int x;
-	int y;
-	Racer* other;
-	
-	do
-	{
-		int direction = randomInt(0, 3);
-		
-		switch(direction)
-		{
-			case 0:
-				x = 0; y = -1; break; // Move up
-			case 1:
-				x = 0; y = 1; break; // Move down
-			case 2:
-				x = -1; y = 0; break; // Move left
-			case 3:
-				x = 1; y = 0; break; // Move right
-			default:
-				return;
-		}
-		
-		x = x < 0 ? (x + racerX + PLANETX_SIZE) % PLANETX_SIZE
-				  : (x + racerX) % PLANETX_SIZE; 
-		y = y < 0 ? (y + racerY + PLANETX_SIZE) % PLANETX_SIZE
-				  : (y + racerY) % PLANETX_SIZE;
-		
-		other = getRacerAt(x, y);
-	} while (other != NULL);
-	
-	racer->getPos()->setPos(x, y);
-}
-
-Racer* API::getRacerAt(int x, int y)
-{
-	for(int i = 0; i < RACER_COUNT; ++i)
-		if (racers[i]->getPos()->at(x,y))
-			return racers[i];
-	
-	return NULL;
-}
 
 
 void API::race(Racer* racer)
@@ -126,12 +61,136 @@ void API::race(Racer* racer)
 	randomlyMoveRacer(racer);
 	
     // Print move info
+	cout << "-----------------------------" << endl;
     cout << racer->getId() << " has moved!" << endl;
 	printRacerPositions();
 	printPlanetX();
 	
+	Entity* e = getEntityAt(racer->getX(), racer->getY());
+	if(e != NULL) {
+		switch(e->getId().front())
+		{
+			case 'F':
+				if(racer->hasCarrot())
+					cout << racer->getId() << " has won!" << endl;
+				break;
+			
+			case 'C':
+				removeEntity(e);
+				racer->setHasCarrot(true);
+				cout << racer->getId() << " has taken a carrot!" << endl;
+				break;
+				
+			default:
+				break;
+		}
+	}
+		
 	sleep_for(1s); // Let user read this turn before unlocking
     this->planetXMutex.unlock();
+}
+
+
+void API::create()
+{
+	racers[0]->create();
+	racers[1]->create();
+	racers[2]->create();
+	racers[3]->create();
+	entities[0].create();
+	entities[1].create();
+	entities[2].create();
+	
+	randomizeRacers();
+	randomizeEntities();
+}
+
+
+void API::randomizeEntities()
+{	
+	for(unsigned i = 0; i < entities.size(); ++i)
+		randomizeEntity(&entities[i]);
+}
+
+void API::randomizeEntity(Entity* e)
+{
+	Entity* other;
+	int randX;
+	int randY;
+	do {
+		e->randomPosition(0, PLANETX_SIZE-1);
+		randX = e->getX();
+		randY = e->getY();
+		
+		e->setPos(-1,-1);
+		other = getEntityAt(randX, randY);
+		
+		e->setPos(randX, randY);
+	} while ( other != NULL );
+}
+
+
+Entity* API::getEntityAt(int x, int y)
+{
+	for(unsigned i = 0; i < entities.size(); ++i)
+		if (entities[i].at(x,y))
+			return &entities[i];
+	
+	return getRacerAt(x, y);
+}
+
+
+void API::removeEntity(Entity* e)
+{
+	for (vector<Entity>::iterator it = entities.begin() ; it != entities.end(); ++it)
+	{
+		if ( (e->getId() == (*it).getId())
+		     &&	 (e->getX() == (*it).getX())
+		     &&	 (e->getY() == (*it).getY())
+		   )
+		{
+			it = entities.erase(it);
+		}
+	}
+}
+
+
+void API::randomizeRacers()
+{	
+	for(int i = 0; i < RACER_COUNT; ++i)
+		randomizeRacer(racers[i]);
+}
+
+void API::randomizeRacer(Racer* racer)
+{
+	Entity* other;
+	do {
+		racer->randomPosition(0, PLANETX_SIZE-1);
+		other = getEntityAt(racer->getX(), racer->getY());
+	} while ( other != NULL && racer->getId() != other->getId() );
+}
+
+
+void API::randomlyMoveRacer(Racer* racer)
+{ 	
+	int racerX = racer->getX();
+	int racerY = racer->getY();	
+	Racer* other;
+	
+	do {
+		racer->randomlyMove(PLANETX_SIZE);
+		other = getRacerAt(racer->getX(), racer->getY());
+		if(other != NULL && racer->getId() != other->getId() ) racer->setPos(racerX, racerY);
+	} while (other != NULL && racer->getId() != other->getId() );
+}
+
+Racer* API::getRacerAt(int x, int y)
+{
+	for(int i = 0; i < RACER_COUNT; ++i)
+		if (racers[i]->at(x,y))
+			return racers[i];
+	
+	return NULL;
 }
 
 
@@ -141,11 +200,17 @@ void API::printPlanetX()
 	{
 		for (int j = 0; j < PLANETX_SIZE; ++j)
 		{
-			Racer* racer = getRacerAt(i,j);
-			if (racer == NULL)
-				cout << "-";
-			else
-				cout << racer->getId();
+			Entity* e = getEntityAt(i,j);
+			Racer* r = getRacerAt(i,j);
+			if (r != NULL) {
+				cout << r->getId();
+				if (r->hasCarrot()) cout << "C";
+				else cout << " ";
+		    } else if (e != NULL) {
+				cout << e->getId() << " ";
+			} else {
+				cout << "- ";
+			}
 		}
 		
 		cout << endl;
@@ -155,12 +220,21 @@ void API::printPlanetX()
 
 void API::printRacerPositions()
 {
+	for(unsigned i = 0; i < entities.size(); ++i)
+		cout << entities[i].getId()
+			 << ": ("
+			 << entities[i].getX()
+			 << ", "
+			 << entities[i].getY()
+			 << ")"
+			 << endl;
+	
 	for(int i = 0; i < RACER_COUNT; ++i)
 		cout << racers[i]->getId()
 			 << ": ("
-			 << racers[i]->getPos()->getX()
+			 << racers[i]->getX()
 			 << ", "
-			 << racers[i]->getPos()->getY()
+			 << racers[i]->getY()
 			 << ")"
 			 << endl;
 }
