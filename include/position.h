@@ -27,7 +27,7 @@ public:
     int getY() { return m_y; }
     
     bool at(int atX, int atY) {
-      return (m_x == atX) && (m_x == atY);
+      return (m_x == atX) && (m_y == atY);
     }
 };
 

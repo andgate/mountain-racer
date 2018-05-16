@@ -79,9 +79,28 @@ void API::randomlyMoveRacer(Racer* racer)
 	int y;
 	Racer* other;
 	
-	do {
-		x = abs(racerX + randomInt(-1, 1))  % PLANETX_SIZE;
-		y = abs(racerY + randomInt(-1, 1)) % PLANETX_SIZE;
+	do
+	{
+		int direction = randomInt(0, 3);
+		
+		switch(direction)
+		{
+			case 0:
+				x = 0; y = -1; break; // Move up
+			case 1:
+				x = 0; y = 1; break; // Move down
+			case 2:
+				x = -1; y = 0; break; // Move left
+			case 3:
+				x = 1; y = 0; break; // Move right
+			default:
+				return;
+		}
+		
+		x = x < 0 ? (x + racerX + PLANETX_SIZE) % PLANETX_SIZE
+				  : (x + racerX) % PLANETX_SIZE; 
+		y = y < 0 ? (y + racerY + PLANETX_SIZE) % PLANETX_SIZE
+				  : (y + racerY) % PLANETX_SIZE;
 		
 		other = getRacerAt(x, y);
 	} while (other != NULL);
@@ -103,14 +122,13 @@ void API::race(Racer* racer)
 {
 	this->planetXMutex.lock();
     
+	// Make move
 	randomlyMoveRacer(racer);
 	
-    // racer stuff
+    // Print move info
     cout << racer->getId() << " has moved!" << endl;
-	
-	printPlanetX();
 	printRacerPositions();
-    
+	printPlanetX();
 	
 	sleep_for(1s); // Let user read this turn before unlocking
     this->planetXMutex.unlock();
