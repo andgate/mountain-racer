@@ -58,4 +58,4 @@ protected:
 
 };
 
-#endif /* _H */
+#endif /* RANDOM_H */

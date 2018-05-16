@@ -15,5 +15,6 @@
 int main()
 {
     API api;
-    return api.run();
+    api.run();
+    return 0;
 }

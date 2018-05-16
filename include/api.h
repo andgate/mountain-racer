@@ -38,13 +38,13 @@ public:
 	void run();
 
 private:
-	thread bunny;
-	thread taz;
-	thread tweety;
-	thread marvin;
     
-    mutex mountainMutex;
-    vector<vector<int>> mountain;
+    const int RACER_COUNT = 4;
+    Racer* racers[4];
+	thread racerThreads[4];
+    
+    const int PLANETX_SIZE = 10;
+    mutex planetXMutex;
 
 	bool isWon;
 
@@ -54,20 +54,26 @@ private:
 	 *  For now, mostly just creates a random number generator.
 	 */
 	void create();
-	
-
+    
+    
+    void randomizeRacers();
+    void randomizeRacer(Racer*);
+    void randomlyMoveRacer(Racer*);
+    Racer* getRacerAt(int atX, int atY);
     
     /**
 	 * @brief Race a player
-     * 
+     *
      * Simply locks the mountain and unlocks it.
 	 */
 	void race(Racer* racer);
 
     /**
-	 * @brief Print the mountain to the console.
+	 * @brief Print Planet X to the console.
 	 */
-	void printMountain();
+	void printPlanetX();
+    
+    void printRacerPositions();
 };
 
 #endif /* API_H */
