@@ -41,7 +41,7 @@ public:
 private:
     vector<Entity> entities; 
   
-    Racer* racers[RACER_COUNT];
+    Racer racers[RACER_COUNT];
 	thread racerThreads[RACER_COUNT];
     
     mutex planetXMutex;

@@ -14,23 +14,10 @@ using namespace std::chrono_literals; // ns, ms, s
 API::API()
 	: entities()
 	, isWon(false)
-{
-	racers[0] = new Racer("B");
-	racers[1] = new Racer("D");
-	racers[2] = new Racer("T");
-	racers[3] = new Racer("M");
-	
-	entities.reserve(3);
-	entities.push_back(Entity("C"));
-	entities.push_back(Entity("C"));
-	entities.push_back(Entity("F"));
-}
+{}
 
 API::~API()
-{
-	for(int i = 0; i < RACER_COUNT; ++i)
-		delete &racers[i];
-}
+{}
 
 void API::run()
 {
@@ -42,7 +29,7 @@ void API::run()
 		cout << "-----------------------------------" << endl;
 		cout << "-- ROUND #" << roundCount++ << endl;
 		for(int i = 0; i < RACER_COUNT; ++i) {
-			Racer* racer = racers[i];
+			Racer* racer = &racers[i];
 			racerThreads[i] = thread( [this, racer] { this->race(racer); } );
 		}
 		
@@ -56,7 +43,12 @@ void API::run()
 void API::race(Racer* racer)
 {
 	this->planetXMutex.lock();
-    
+	
+	if(isWon) {
+		this->planetXMutex.unlock();
+		return;
+	}
+	
 	// Make move
 	randomlyMoveRacer(racer);
 	
@@ -71,11 +63,15 @@ void API::race(Racer* racer)
 		switch(e->getId().front())
 		{
 			case 'F':
-				if(racer->hasCarrot())
+				if(racer->hasCarrot()) {
 					cout << racer->getId() << " has won!" << endl;
+					isWon = true;
+				}
 				break;
 			
 			case 'C':
+				if(racer->hasCarrot())
+					break;
 				removeEntity(e);
 				racer->setHasCarrot(true);
 				cout << racer->getId() << " has taken a carrot!" << endl;
@@ -86,21 +82,41 @@ void API::race(Racer* racer)
 		}
 	}
 		
-	sleep_for(1s); // Let user read this turn before unlocking
+	sleep_for(100ms); // Let user read this turn before unlocking
     this->planetXMutex.unlock();
 }
 
 
 void API::create()
 {
-	racers[0]->create();
-	racers[1]->create();
-	racers[2]->create();
-	racers[3]->create();
-	entities[0].create();
-	entities[1].create();
-	entities[2].create();
+	// Create racers
+	racers[0] = Racer("B");
+	racers[0].create();
 	
+	racers[1] = Racer("D");
+	racers[1].create();
+	
+	racers[2] = Racer("T");
+	racers[2].create();
+	
+	racers[3] = Racer("M");
+	racers[3].create();
+	
+	
+	// Create entities
+	entities.reserve(3);
+	
+	entities.push_back(Entity("C"));
+	entities[0].create();
+	
+	entities.push_back(Entity("C"));
+	entities[1].create();
+	
+	entities.push_back(Entity("F"));
+	entities[2].create();
+
+	
+	// Randomly place racers and entities
 	randomizeRacers();
 	randomizeEntities();
 }
@@ -158,7 +174,7 @@ void API::removeEntity(Entity* e)
 void API::randomizeRacers()
 {	
 	for(int i = 0; i < RACER_COUNT; ++i)
-		randomizeRacer(racers[i]);
+		randomizeRacer(&racers[i]);
 }
 
 void API::randomizeRacer(Racer* racer)
@@ -187,8 +203,8 @@ void API::randomlyMoveRacer(Racer* racer)
 Racer* API::getRacerAt(int x, int y)
 {
 	for(int i = 0; i < RACER_COUNT; ++i)
-		if (racers[i]->at(x,y))
-			return racers[i];
+		if (racers[i].at(x,y))
+			return &racers[i];
 	
 	return NULL;
 }
@@ -230,11 +246,11 @@ void API::printRacerPositions()
 			 << endl;
 	
 	for(int i = 0; i < RACER_COUNT; ++i)
-		cout << racers[i]->getId()
+		cout << racers[i].getId()
 			 << ": ("
-			 << racers[i]->getX()
+			 << racers[i].getX()
 			 << ", "
-			 << racers[i]->getY()
+			 << racers[i].getY()
 			 << ")"
 			 << endl;
 }
