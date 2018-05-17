@@ -39,46 +39,7 @@ public:
 	void run();
 
 private:
-    vector<Entity> entities; 
-  
-    Racer racers[RACER_COUNT];
-	thread racerThreads[RACER_COUNT];
-    
-    mutex planetXMutex;
-
-	bool isWon;
-
-	/**
-	 * @brief Creates the API for the racing game.
-	 *
-	 *  For now, mostly just creates a random number generator.
-	 */
-	void create();
-    
-    
-    void randomizeEntities();
-    void randomizeEntity(Entity*);
-    Entity* getEntityAt(int, int);
-    void removeEntity(Entity*);
-    
-    void randomizeRacers();
-    void randomizeRacer(Racer*);
-    void randomlyMoveRacer(Racer*);
-    Racer* getRacerAt(int, int);
-    
-    /**
-	 * @brief Race a player
-     *
-     * Simply locks the mountain and unlocks it.
-	 */
-	void race(Racer* racer);
-
-    /**
-	 * @brief Print Planet X to the console.
-	 */
-	void printPlanetX();
-    
-    void printRacerPositions();
+	PlanetX planetX;
 };
 
 #endif /* API_H */

@@ -2,23 +2,22 @@
 #define ENTITY_H
 
 #include <string>
-#include "random.h"
-#include "position.h"
+#include "random_position.h"
 #include "constants.h"
 
-class Entity : protected Random, public Position
+class Entity : protected RandomPosition
 {
 private:
 	string m_id;
 	
 public:
 	Entity(string id)
-		: Position(-1, -1)
+		: RandomPosition(-1, -1)
 		, m_id(id)
 	{}
 	
 	Entity(string id, Position pos)
-		: Position(pos)
+		: RandomPosition(pos)
 		, m_id(id)
 	{}
 	
@@ -31,36 +30,17 @@ public:
     
 	string getId() { return m_id; }
     void setId(string newId) { m_id = newId; }
-    
-    void randomPosition(int min, int max)
+
+	/*
+	void randomlyMove()
 	{
-		setPos(randomInt(min, max), randomInt(min, max));
-	}
-	
-	void randomlyMove(int max)
-	{
-		int dx, dy;
-		int direction = randomInt(0, 3);
-		switch(direction)
-		{
-			case 0:
-				dx = 0; dy = -1; break; // Move up
-			case 1:
-				dx = 0; dy = 1; break; // Move down
-			case 2:
-				dx = -1; dy = 0; break; // Move left
-			case 3:
-				dx = 1; dy = 0; break; // Move right
-			default:
-				dx = 0; dy = 0; break;
-		}
+		Position nextPos;
+		do {
+			nextPos = Position::fromDirection(getX(), getY());
+		} while (nextPos.inBounds(0, PLANETX_SIZE-1));
 		
-		setPos( dx < 0 ? (dx + getX() + max) % max
-				       : (dx + getX()      ) % max
-			  , dy < 0 ? (dy + getY() + max) % max
-					   : (dy + getY()      ) % max
-			  );
-	}
+		setPos(nextPos.getX(), nextPos.getY());
+	}*/
 };
 
 #endif /* ENTITY_H */
