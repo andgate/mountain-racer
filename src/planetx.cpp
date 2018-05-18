@@ -114,6 +114,12 @@ void PlanetX::randomizeEntity(shared_ptr<Entity> e)
 	e->setPos(randPos);
 }
 
+void PlanetX::randomlyMoveMountain()
+{
+	cout << "Marvin has actived dimensional thingy and moved mountain!" << endl;
+	randomizeEntity(entities.front()); // Mountain is always at the front
+}
+
 
 // Race method ran by racer thread
 void PlanetX::race(shared_ptr<Racer> racer)
@@ -216,11 +222,6 @@ void PlanetX::randomlyMoveRacer(shared_ptr<Racer> racer)
 	y = ( (y % PLANETX_SIZE) + PLANETX_SIZE ) % PLANETX_SIZE;
 	
 	racer->setPos(x, y);
-}
-
-void PlanetX::randomlyMoveMountain()
-{
-	cout << "Marvin has actived dimensional thingy and moved mountain!" << endl;
 }
 
 
