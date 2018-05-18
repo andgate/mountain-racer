@@ -38,7 +38,7 @@ public:
 	string getId() { return m_id; }
 	string draw() { return m_id; }
 	
-	string toString() { return (m_name + "(" + m_id + ")"); }
+	string toString() { return (m_name + " (" + m_id + ")"); }
     
     void setPos(int newX, int newY) {
         m_history.push_back(Position(getX(), getY()));
