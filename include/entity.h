@@ -8,19 +8,22 @@
 class Entity : public RandomPosition
 {
 private:
+    string m_name;
 	string m_id;
     vector<Position> m_history;
 	
 public:
-	Entity(string id)
+	Entity(string name, string id)
 		: RandomPosition(-1, -1)
-		, m_id(id)
+		, m_name(name)
+        , m_id(id)
         , m_history()
 	{}
 	
-	Entity(string id, Position pos)
+	Entity(string name, string id, Position pos)
 		: RandomPosition(pos)
-		, m_id(id)
+		, m_name(name)
+        , m_id(id)
         , m_history()
 	{}
 	
@@ -33,8 +36,9 @@ public:
     
     
 	string getId() { return m_id; }
-    void setId(string newId) { m_id = newId; }
-    
+	string draw() { return m_id; }
+	
+	string toString() { return (m_name + "(" + m_id + ")"); }
     
     void setPos(int newX, int newY) {
         m_history.push_back(Position(getX(), getY()));

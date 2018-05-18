@@ -35,17 +35,17 @@ void PlanetX::create()
     racers.clear();
     racers.reserve(RACER_COUNT);
     
-	racers.push_back(make_shared<Racer>("B"));
+	racers.push_back(make_shared<Racer>("Bunny", "B"));
 	racers[0]->create();
 	
-	racers.push_back(make_shared<Racer>("D"));
+	racers.push_back(make_shared<Racer>("Taz", "D"));
 	racers[1]->create();
 	
-	racers.push_back(make_shared<Racer>("T"));
+	racers.push_back(make_shared<Racer>("Tweety", "T"));
 	racers[2]->create();
 	
     // Marvin is always at the last racer
-	racers.push_back(make_shared<Racer>("M"));
+	racers.push_back(make_shared<Racer>("Marvin", "M"));
 	racers[3]->create();
 	
     
@@ -53,13 +53,13 @@ void PlanetX::create()
     entities.clear();
     entities.reserve(ENTITY_COUNT);
     
-	entities.push_back(make_shared<Entity>("F"));
+	entities.push_back(make_shared<Entity>("Mountain", "F"));
 	entities[0]->create();
 	
-	entities.push_back(make_shared<Entity>("C"));
+	entities.push_back(make_shared<Entity>("Carrot", "C"));
 	entities[1]->create();
 	
-	entities.push_back(make_shared<Entity>("C"));
+	entities.push_back(make_shared<Entity>("Carrot", "C"));
 	entities[2]->create();
 
 	
@@ -70,8 +70,8 @@ void PlanetX::create()
 
 void PlanetX::step()
 {
-	cout << "-----------------------------------" << endl;
-	cout << "-- ROUND #" << m_roundCount << endl;
+	//cout << "-----------------------------------" << endl;
+	//cout << "-- ROUND #" << m_roundCount << endl;
 
 	int threadCount = racers.size();
 	// Iterate through racers up to marvin.
@@ -116,8 +116,9 @@ void PlanetX::randomizeEntity(shared_ptr<Entity> e)
 
 void PlanetX::randomlyMoveMountain()
 {
-	cout << "Marvin has actived dimensional thingy and moved mountain!" << endl;
 	randomizeEntity(entities.front()); // Mountain is always at the front
+	printPlanetX();
+	printBorder();
 }
 
 
@@ -132,9 +133,11 @@ void PlanetX::race(shared_ptr<Racer> racer)
 	}
 	
     // Print move info
-	cout << "-----------------------------" << endl;
-    cout << racer->getId() << " has moved!" << endl;
+	//cout << "-----------------------------" << endl;
+    //cout << racer->getId() << " has moved!" << endl;
 	
+	
+	// The big block of game logic!
 	bool hasMoved = false;
 	while (!hasMoved)
 	{
@@ -144,30 +147,22 @@ void PlanetX::race(shared_ptr<Racer> racer)
 		auto r = getRacerAt(*racer);
 		if (e != nullptr)
 		{
-			cout << "Entity collision!" << endl;
 			switch (e->getId().front())
 			{
 				case 'C':
-					cout << "Carrot collision!" << endl;
 					if ( racer->hasCarrot() ) {
-						racer->undoMove();						
-						cout << "Already had carrot!" << endl;
+						racer->undoMove();					
 					} else {
-						cout << "eating carrot!" << endl;
 						removeEntity(e);
-						cout << "ate carrot!" << endl;
 						racer->setHasCarrot(true);
-						cout << racer->getId() << " has taken a carrot!" << endl;
 						hasMoved = true;
 					}
 					break;
 					
 				case 'F':
-					cout << "Mountain collision!" << endl;
 					if ( racer->hasCarrot() ) {
 						removeEntity(e);
 						m_isWon = true;
-						cout << racer->getId() << " has won!" << endl;
 						hasMoved = true;
 					} else {
 					    racer->undoMove();
@@ -180,19 +175,12 @@ void PlanetX::race(shared_ptr<Racer> racer)
 			}
 		} else if (r != nullptr && r->getId() != racer->getId())
 		{
-			cout << "Racer collision!" << endl;
-			printEntities();
-			printPlanetX();
-			
 			if(racer->getId().front() == 'M') {
 				// Kill other, take their carrot, give it to marvin
 				removeRacer(r);
 				hasMoved = true;
-				cout << "M has shot and killed " << r->getId() << "!" << endl;
-				if (!racer->hasCarrot() && r->hasCarrot()) {
-					cout << "M looted their corpse for a carrot." << endl;
+				if (!racer->hasCarrot() && r->hasCarrot())
 					racer->setHasCarrot(true);
-				}
 			} else {
 				racer->undoMove();
 			}
@@ -200,13 +188,13 @@ void PlanetX::race(shared_ptr<Racer> racer)
 			hasMoved = true;
 		}
 	}
-	
-	
-	cout << "dump info" << endl;
+		
 	printPlanetX();
-	printEntities();
+	printBorder();
+	
+	if (m_isWon) cout << racer->toString() << " has won!" << endl;
 
-	sleep_for(100ms); // Let user read this turn before unlocking
+	sleep_for(500ms); // Let user read this turn before unlocking
     this->planetXMutex.unlock();
 }
 
@@ -360,13 +348,13 @@ void PlanetX::printPlanetX()
 			auto e = getEntityAt(i,j);
 			auto r = getRacerAt(i,j);
 			if (r != nullptr) {
-				cout << r->getId();
-				if (r->hasCarrot()) cout << "C";
-				else cout << " ";
+				cout << "    "
+					 << r->getId()
+					 << (r->hasCarrot() ? " (C)" : "    ");
 		    } else if (e != nullptr) {
-				cout << e->getId() << " ";
+				cout << "    " << e->getId() << "    ";
 			} else {
-				cout << "- ";
+				cout << "    -    ";
 			}
 		}
 		
@@ -375,10 +363,19 @@ void PlanetX::printPlanetX()
 }
 
 
+void PlanetX::printBorder()
+{
+	for (int i = 0; i < PLANETX_SIZE; ++i)
+		cout << "---------";
+	
+	cout << endl;
+}
+
+
 void PlanetX::printEntities()
 {
 	for(unsigned i = 0; i < entities.size(); ++i)
-		cout << entities[i]->getId()
+		cout << entities[i]->toString()
 			 << ": ("
 			 << entities[i]->getX()
 			 << ", "
@@ -387,7 +384,7 @@ void PlanetX::printEntities()
 			 << endl;
 	
 	for(unsigned i = 0; i < racers.size(); ++i)
-		cout << racers[i]->getId()
+		cout << racers[i]->toString()
 			 << ": ("
 			 << racers[i]->getX()
 			 << ", "

@@ -15,12 +15,10 @@ API::~API()
 void API::run()
 {
 	planetX.create();
-    planetX.printEntities();
+    planetX.printBorder();
 	
     while(!planetX.isWon())
 	{
 		planetX.step();
     }
-    
-    cout << "Game lasted " << planetX.roundCount() << " rounds." << endl;
 }

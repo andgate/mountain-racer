@@ -36,6 +36,7 @@ public:
     
     // Printing output
 	void printPlanetX();
+    void printBorder();
     void printEntities();
     
 private:

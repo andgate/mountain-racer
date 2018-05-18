@@ -11,13 +11,8 @@ private:
     bool m_hasCarrot;
 
 public:
-	Racer()
-	  : Entity("")
-	  , m_hasCarrot(false)
-	{}
-	
-    Racer(string id)
-	  : Entity(id)
+    Racer(string name, string id)
+	  : Entity(name, id)
       , m_hasCarrot(false)
     {}
     
