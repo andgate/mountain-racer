@@ -20,8 +20,10 @@ public:
       : m_x(x), m_y(y)
     {}
       
-    ~Position() {}
+    virtual ~Position() {}
   
+    Position getPos()
+    { return Position(*this); }
   
     void setPos(int newX, int newY)
       { m_x = newX; m_y = newY; }
@@ -35,39 +37,54 @@ public:
     int getY() { return m_y; }
     
     
-    void add(Position other)
-		{
-			m_x += other.getX();
-			m_y += other.getY();
-		}
+    void add(Position* other)
+    {
+        m_x += other->getX();
+        m_y += other->getY();
+    }
     
-    bool at(int atX, int atY) {
-      return (m_x == atX) && (m_y == atY);
+    void add(Position other)
+    {
+        m_x += other.getX();
+        m_y += other.getY();
+    }
+    
+    void mod(int base)
+    {
+        m_x %= base;
+        m_y %= base;
+    }
+    
+    bool at(int atX, int atY)
+    {
+        return (m_x == atX) && (m_y == atY);
+    }
     
     
     bool inBounds(int min, int max)
-		{
-				return (0 <= m_x) && (m_x <= max) && (0 <= m_y) && (m_y <= max);
-		}
-    
-    
-		static Position fromDirection(int x, int y, int direction)
     {
-			switch(direction)
-			{
-				case 0:
-					x += 0; y += -1; break; // Move up
-				case 1:
-					x += 0; y += 1; break; // Move down
-				case 2:
-					x += -1; y += 0; break; // Move left
-				case 3:
-					x += 1; y += 0; break; // Move right
-				default:
-					x += 0; y += 0; break;
-			}
-		
-			return Position(x, y);
+        return (min <= m_x) && (m_x <= max) && (min <= m_y) && (m_y <= max);
+    }
+    
+    
+    static Position fromDirection(int direction)
+    {
+        int x, y;
+        switch(direction)
+        {
+            case 0:
+                x = 0; y = -1; break; // Move up
+            case 1:
+                x = 0; y = 1; break; // Move down
+            case 2:
+                x = -1; y = 0; break; // Move left
+            case 3:
+                x = 1; y = 0; break; // Move right
+            default:
+                x = 0; y = 0; break;
+        }
+    
+        return Position(x, y);
     }
 };
 

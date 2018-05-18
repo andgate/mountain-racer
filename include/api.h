@@ -1,17 +1,7 @@
 #ifndef API_H
 #define API_H
 
-#include <mutex>
-#include <thread>
-#include <vector>
-#include <sstream>
-
-#include "racer.h"
-#include "entity.h"
-#include "constants.h"
-
-using namespace std;
-
+#include "planetx.h"
 
 /**
  * @brief Racing Game API class.

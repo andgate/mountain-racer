@@ -5,7 +5,7 @@
 
 
 API::API()
-	: planetX(PlanetX())
+	: planetX()
 {}
 
 API::~API()
@@ -15,8 +15,7 @@ API::~API()
 void API::run()
 {
 	planetX.create();
-	
-	int roundCount = 1;
+    planetX.printEntities();
 	
     while(!planetX.isWon())
 	{

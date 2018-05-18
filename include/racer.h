@@ -9,22 +9,19 @@ class Racer : public Entity
 { 
 private:
     bool m_hasCarrot;
-	bool m_isAlive;
 
 public:
 	Racer()
 	  : Entity("")
 	  , m_hasCarrot(false)
-	  , m_isAlive(true)
 	{}
 	
     Racer(string id)
 	  : Entity(id)
       , m_hasCarrot(false)
-	  , m_isAlive(true)
     {}
     
-    ~Racer() {}
+    virtual ~Racer() {}
     
     void create() {
 		Entity::create();
@@ -32,9 +29,6 @@ public:
       
     void setHasCarrot(bool hasCarrot) { m_hasCarrot = hasCarrot; }
     bool hasCarrot() { return m_hasCarrot; }
-    
-    void setIsAlive(bool isAlive) { m_isAlive = isAlive; }
-    bool isAlive() { return m_isAlive; }
 };
 
 #endif /* RACER_H */

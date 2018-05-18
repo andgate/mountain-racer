@@ -30,7 +30,7 @@ public:
     /**
 	 * @brief Default destructor for Random.
 	 */
-    ~Random() {}
+    virtual ~Random() {}
  
 protected:
     /**

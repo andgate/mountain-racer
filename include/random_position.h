@@ -5,10 +5,10 @@
 #include "position.h"
 
 
-class RandomPosition : protected Random, public Position
+class RandomPosition : public Random, public Position
 {
 public:
-	RandomPosition(const Position& other) 
+	RandomPosition(const Position& pos) 
 		: Random()
 		, Position(pos)
 	{}
@@ -23,6 +23,9 @@ public:
 		: Random()
 		, Position()
 	{}
+	
+	virtual ~RandomPosition()
+    {}
 	
 	
 	void create()
@@ -49,12 +52,8 @@ public:
 	Position randomDirection()
 	{
 		int direction = randomInt(0, 3);
-		Position pos = Position::fromDirection(direction);
-		
-		return Position(x, y);
+        return fromDirection(direction);
 	}
-}
-
-
+};
 
 #endif /* RANDOM_POSITION_H */
