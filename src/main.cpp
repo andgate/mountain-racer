@@ -1,7 +1,7 @@
 /**
  * Authors:     Gabriel Anderson,
  *              Matthew Harker
- * Assignment:  Project 2, Dominoes
+ * Assignment:  Project 2, Mountain Racing
  * Class:       CS380
  */
 
