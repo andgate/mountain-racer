@@ -34,7 +34,7 @@ public:
 		Random::create();
     }
     
-    
+    string getName() { return m_name; } 
 	string getId() { return m_id; }
 	string draw() { return m_id; }
 	

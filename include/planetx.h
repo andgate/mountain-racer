@@ -20,11 +20,13 @@ class PlanetX
 private:
   
 public:
+
 	PlanetX();
 	~PlanetX();
 	
 
     // check the status of the race
+    string getWinner();
 	bool isWon();
 	int roundCount();
 
@@ -47,7 +49,7 @@ private:
 	vector<shared_ptr<Racer>> racers;
     vector<shared_ptr<Entity>> entities;
 	
-	bool m_isWon;
+	string m_winnerName;
 	int m_roundCount;
 	
 	

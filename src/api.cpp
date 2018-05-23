@@ -21,4 +21,6 @@ void API::run()
 	{
 		planetX.step();
     }
+
+	cout << planetX.getWinner() << " has won!" << endl;
 }

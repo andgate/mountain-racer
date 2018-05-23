@@ -11,16 +11,21 @@ using namespace std::chrono_literals; // ns, ms, s
 PlanetX::PlanetX()
 	: racers(RACER_COUNT)
 	, entities(ENTITY_COUNT)
-	, m_isWon(false)
+	, m_winnerName()
     , m_roundCount(1)
 {}
 
 PlanetX::~PlanetX()
 {}
 
+string PlanetX::getWinner()
+{
+	return m_winnerName;
+}
+
 bool PlanetX::isWon()
 {
-	return m_isWon;
+	return !m_winnerName.empty();
 }
 
 
@@ -127,7 +132,7 @@ void PlanetX::race(shared_ptr<Racer> racer)
 {
 	this->planetXMutex.lock();
 	
-	if(m_isWon || racer == nullptr) {
+	if(isWon() || racer == nullptr) {
 		this->planetXMutex.unlock();
 		return;
 	}
@@ -161,8 +166,8 @@ void PlanetX::race(shared_ptr<Racer> racer)
 					
 				case 'F':
 					if ( racer->hasCarrot() ) {
-						removeEntity(e);
-						m_isWon = true;
+						//removeEntity(e);
+						m_winnerName = racer->getName();
 						hasMoved = true;
 					} else {
 					    racer->undoMove();
@@ -191,10 +196,8 @@ void PlanetX::race(shared_ptr<Racer> racer)
 		
 	printPlanetX();
 	printBorder();
-	
-	if (m_isWon) cout << racer->toString() << " has won!" << endl;
 
-	sleep_for(500ms); // Let user read this turn before unlocking
+	sleep_for(300ms); // Let user read this turn before unlocking
     this->planetXMutex.unlock();
 }
 
