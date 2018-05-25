@@ -203,14 +203,13 @@ void PlanetX::race(shared_ptr<Racer> racer)
 
 
 void PlanetX::randomlyMoveRacer(shared_ptr<Racer> racer)
-{
-	Position randPos = racer->randomDirection();
-	
-	int x = racer->getX() + randPos.getX();
-	int y = racer->getY() + randPos.getY();
-	
-	x = ( (x % PLANETX_SIZE) + PLANETX_SIZE ) % PLANETX_SIZE;
-	y = ( (y % PLANETX_SIZE) + PLANETX_SIZE ) % PLANETX_SIZE;
+{	
+	int x, y;
+	do {
+		Position randPos = racer->randomDirection();
+		x = racer->getX() + randPos.getX();
+		y = racer->getY() + randPos.getY();
+	} while (0 > x || x >= PLANETX_SIZE || 0 > y || y >= PLANETX_SIZE);
 	
 	racer->setPos(x, y);
 }
